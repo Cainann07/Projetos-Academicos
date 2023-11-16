@@ -1,1 +1,511 @@
+#include <stdio.h> // Biblioteca que importa as funcionalidades de entrada e sa�da de dados.
+#include <string.h> // Biblioteca que importa funcionalidades para manipular strings.
+#include <unistd.h> // Biblioteca que importa funcionalidades do sistema operacional relacionadas ao acesso e controle de processos.
+#include <locale.h> // Biblioteca que importa funcionalidades de formata��o de acordo com a regi�o solicitada.
+
+#define MAX_INDICES 10
+#define MAX_CARACTERES 300
+int main (void){
+	setlocale(LC_ALL, "Portuguese");
+    
+    int escolha; // Vari�vel que ser� utilizada na primeira pergunta do programa.
+    int escolha2; // Vari�vel do tipo inteiro que serve para armazenar a escolha do usu�rio de cadastrar um livro ou de comprar livros.
+    int opcao; // Vari�vel que ser� utilizada para escolher o g�nero do livro que o usu�rio deseja.
+    int opcao2; // Vari�vel que ser� utilizada ap�s o usu�rio informar que deseja modificar a lista de livros.
+    char senha[] = "123"; // Vetor que armazenar� a senha necess�ria para o administrador poder cadastrar um livro.
+    char senha_digitada[20]; // Vetor que armazenar� a senha que o usu�rio digitar.
+    int livro_escolhido; // Vari�vel que ser� utilizada na parte de alterar a lista de livros.
+
+    // Abaixo est�o os contadores para o n�mero de livros de cada g�nero liter�rio.
+    int num_livros_litbr = 6; 
+    int num_livros_litest = 6;
+    int num_livros_saude = 6;
+    int num_livros_autoajuda = 6;
+    int num_livros_infantojuvenil = 6;
+    
+    char genero[5][MAX_CARACTERES] = {"Literatura Brasileira", "Literatura Estrangeira", "Sa�de", "Auto-ajuda", "Infanto Juvenil"};   /*Vetor que armazena os g�neros dispon�veis*/
+
+    // Abaixo est�o os vetores que armazenam os livros, os autores dos livros e a sinopse de cada livro do g�nero: Literatura Brasileira.
+    char lit_br[MAX_INDICES][MAX_CARACTERES] = {" ","Mem�rias P�stumas de Br�s Cubas", "Os Sert�es", "Dom Casmurro", "O Corti�o", "Morte e vida severina"};  
+    char autores_litbr[MAX_INDICES][MAX_CARACTERES] = {" ", "Machado de Assis", "Euclides da Cunha", "Machado de Assis", "Alu�sio Azevedo", "Jo�o Cabral de Melo Neto"}; 
+    char sinopse_litbr[MAX_INDICES][MAX_CARACTERES] = {" ","Ap�s ter morrido, em pleno ano de 1869, Br�s Cubas decide por narrar sua hist�ria e...", "A obra trata da Guerra de Canudos que aconteceu no interior da Bahia...", "Dom Casmurro conta a hist�ria de Bento Santiago (Bentinho), apelidado de Dom Casmurro por ser calado e introvertido.",
+    "O romance mostra as mazelas e a vida miser�vel dos moradores de duas habita��es coletivas...", "Severino � um nordestino que resolve tentar mudar de vida e vai em dire��o ao litoral e ao sudeste do Brasil, esperan�oso de que..."};
+    
+    // Abaixo est�o os vetores que armazenam os livros, os autores dos livros e a sinopse de cada livro do g�nero: Literatura Estrangeira.
+    char lit_est[MAX_INDICES][MAX_CARACTERES] = {" ","O homem de giz", "O di�rio de Anne Frank", "A Odisseia", "Harry Potter e a pedra filosofal", "O Menino do Pijama Listrado"};  /*Vetor que armazena os livros do g�nero: Literatura Estrangeira.*/
+    char autores_litest[MAX_INDICES][MAX_CARACTERES] = {" ","C.J. Tudor", "Anne Frank", "Homero", "J.K. Rowling","John Boyne"};   /*Vetor que armazena os autores dos livros do g�nero: Literatura Estrangeira.*/
+    char sinopse_litest[MAX_INDICES][MAX_CARACTERES] = {" ","Em 2016, Eddie se esfor�a para superar o passado...", "Depoimento da pequena Anne, morta pelos nazistas ap�s...", "A Odisseia narra a hist�ria de Ulisses, que depois de passar 10 anos na Guerra...",
+    "Harry Potter � um garoto �rf�o que vive infeliz com seus tios, os Dursleys...", "O livro conta a hist�ria de um garoto chamado Bruno que tinha 10 anos, filho de um..."};
+    
+    // Abaixo est�o os vetores que armazenam os livros, os autores dos livros e a sinopse de cada livro do g�nero: Sa�de.
+    char saude[MAX_INDICES][MAX_CARACTERES] = {" ", "O Imperador de Todos os Males: uma biografia do C�ncer", "O S�culo dos Cirurgi�es", "Mortais � N�s, a Medicina e o Que Realmente Importa no Final", "Sob Press�o � A Rotina de Guerra de Um M�dico Brasileiro", "O dem�nio do meio-dia"};  /*Vetor que armazena os livros do g�nero: Sa�de.*/
+    char autores_saude[MAX_INDICES][MAX_CARACTERES] = {" ","Siddhartha Mukherjee", "Jurgen Thorwald", "Atul Gawande", "M�rcio Maranh�o", "Andrew Solomon"};  /*Vetor que armazena os autores dos livros do g�nero: Sa�de.*/
+    char sinopse_saude[MAX_INDICES][MAX_CARACTERES] = {" ","Relata a biografia de um personagem inusitado: o c�ncer. A doen�a � antropomorfizada n�o apenas no t�tulo do livro, ela �...", "Este livro � o resultado de dezenas de cenas de estudos e pesquisas, n�o s� de Hartmann como de Thorwald, e constitui o mais fascinante relato das horas geniais dos...",
+    "O conte�do desse livro abrange o aumento do tempo e da qualidade de vida e suas repercuss�es no processo de envelhecimento e no...","Sob press�o � um livro arrebatador, a hist�ria real de um jovem m�dico que n�o quer desistir de lutar. O relato de quem...","O livro �O dem�nio do meio-dia: uma anatomia da depress�o�, lan�ado pela Companhia das Letras no ano de 2014 no Brasil, relata a aut�psia de uma das patologias mentais mais prevalente, terr�vel e menos compreendida no mundo atual: a depress�o..."  };
+
+    // Abaixo est�o os vetores que armazenam os livros, os autores dos livros e a sinopse de cada livro do g�nero: Auto-ajuda.
+    char auto_ajuda[MAX_INDICES][MAX_CARACTERES] = {" ","O poder do agora", "A coragem de ser imperfeito", "O Poder do H�bito", "Trabalhe 4 Horas Por Semana", "Como Fazer Amigos e Influenciar Pessoas"}; /*Vetor que armazena os livros do g�nero: Auto-ajuda.*/
+    char autores_auto_ajuda[MAX_INDICES][MAX_CARACTERES] = {" ","Eckhart Tolle", "Bren� Brown", "Charles Duhigg", "Timothy Ferriss", "Dale Carnegie"};   /*Vetor que armazena os autores dos livros do g�nero: Auto-ajuda.*/
+    char sinopse_auto_ajuda[MAX_INDICES][MAX_CARACTERES] = {" "," livro O Poder do Agora fala sobre a import�ncia de viver no momento presente. Nesse sentido, o autor destaca a...", "De forma bem resumida, � sobre esses temas que trata o livro A coragem de ser imperfeito � Como aceitar a pr�pria vulnerabilidade, vencer a vergonha e ousar...",
+    "Charles Duhigg, rep�rter investigativo do New York Times, mostra que a chave para o sucesso � entender como os h�bitos funcionam - e como podemos transform�-los...", "Timothy Ferriss convida-nos a abandonar nosso conceito de trabalho. O autor defende que � uma insensatez, para dizer o m�nimo, dedicar...",
+    "Em suas p�ginas, voc� aprende a ser mais carism�tico e conseguir a simpatia dos outros..."};
+    
+    // Abaixo est�o os vetores que armazenam os livros, os autores dos livros e a sinopse de cada livro do g�nero: Infanto Juvenil.
+    char infanto_juvenil[MAX_INDICES][MAX_CARACTERES] = {" ","O pequeno pr�ncipe", "Marcelo, Marmelo, Martelo", "Hist�ria meio ao contr�rio", "As aventuras de Robin Hood", "Os tr�s mosqueteiros"};  /*Vetor que armazena os livros do g�nero: Infanto Juvenil.*/
+    char autores_infanto_juvenil[MAX_INDICES][MAX_CARACTERES] = {" ","Antoine de Saint-Exup�ry", "Ruth Rocha", "Ana Maria Machado", "Howard Pyle", "Alexandre Dumas"};    /*Vetor que armazena os autores dos livros do g�nero: Infanto Juvenil.*/
+    char sinopse_infanto_juvenil[MAX_INDICES][MAX_CARACTERES] = {" ","Um piloto cai com seu avi�o no deserto e ali encontra uma crian�a loura e fr�gil. Ela diz ter vindo de um...", "Os personagens dos tr�s contos deste livro s�o crian�as que vivem no espa�o urbano. Elas resolvem seus...",
+    "Nesta narrativa ao contr�rio, o pr�ncipe e a princesa n�o se contentam em ser felizes para sempre � porque � assim que come�a a...", "Este livro conta as aventuras de Robin Hood, o m�tico arqueiro que roubava dos ricos para dar aos pobres, na Inglaterra do...",
+    "Os tr�s mosqueteiros, romance do escritor franc�s Alexandre Dumas, ambientado no s�culo XVII, retrata de forma descontra�da e divertida a..."};
+
+    printf("- - - - - - - - - -Bem vindo ao Bookverse!- - - - - - - - - -\n");
+    sleep(1); // Comando "sleep" usado em determinados trechos do c�digo, serve para esperar 1 segundo antes de executar a linha seguinte do c�digo.
+    
+    while(1){
+    
+    printf("Deseja uma recomenda��o de livros[1] ou modificar a lista de livros[2]? ");
+    scanf("%d",&escolha);
+    
+    system("cls"); // Nesse navegador o certo � o "system("clear"). Por�m, no DevC++ � o "system(cls)".
+    
+    sleep(1);
+    
+    if(escolha == 1 ){ /* Estrutura condicional que ser� utilizada caso o usu�rio escolha a op��o 1(recomenda��o de livros).*/
+        printf("Esses s�o os g�neros dispon�veis: \n");
+        for(int contador1 = 0; contador1 < 5; contador1++){ /* Estrutura de repeti��o que ir� exibir os g�neros dispon�veis, os quais est�o inseridos no vetor de g�nero.*/
+            printf("[%d] - %s\n",contador1+1, genero[contador1]);
+            sleep(1);
+        }
+        printf("Selecione o g�nero do livro que voc� deseja:\n");
+        scanf("%d",&opcao);
+        sleep(1);
+        
+        switch(opcao){ /* Estrutura "Switch Case" onde um dos casos ser� utilizado de acordo com o g�nero que o usu�rio escolher.*/
+            
+            case 1:
+            system("cls");
+            printf("G�nero escolhido: Literatura brasileira\n");
+            sleep(1);
+            printf("Os livros que n�s recomendamos s�o: \n");
+            sleep(1);
+            for (int contador2 = 1; contador2 < num_livros_litbr; contador2++){ // Estrutura de repeti��o que ir� exibir o �ndice(come�ando do 1), o t�tulo do livro, seu autor e sua sinopse.
+            printf("[%d] - %s - Autor(a): %s\n Sinopse: %s\n", contador2, lit_br[contador2], autores_litbr[contador2], sinopse_litbr[contador2]);
+            sleep(1);
+                }
+                    break;
+                
+            case 2:
+            system("cls");
+            printf("G�nero escolhido: Literatura Estrangeira\n");
+            sleep(1);
+            printf("Os livros que n�s recomendamos s�o: \n");
+            sleep(1);
+            for (int contador2 = 1; contador2 < num_livros_litest; contador2++){ // Estrutura de repeti��o que ir� exibir o �ndice(come�ando do 1), o t�tulo do livro, seu autor e sua sinopse.
+            printf("[%d] - %s - Autor(a): %s\n Sinopse: %s\n", contador2, lit_est[contador2], autores_litest[contador2], sinopse_litest[contador2]);
+            sleep(1);
+                }
+                    break;
+            
+            case 3:
+            system("cls");
+            printf("G�nero escolhido: Sa�de\n");
+            sleep(1);
+            printf("Os livros que n�s recomendamos s�o: \n");
+            sleep(1);
+            for (int contador2 = 1; contador2 < num_livros_saude; contador2++){ // Estrutura de repeti��o que ir� exibir o �ndice(come�ando do 1), o t�tulo do livro, seu autor e sua sinopse.
+                printf("[%d] - %s - Autor(a): %s\n Sinopse: %s\n", contador2, saude[contador2], autores_saude[contador2], sinopse_saude[contador2]);
+                sleep(1);
+                }
+                    break;
+            
+            case 4:
+            printf("G�nero escolhido: Auto-ajuda\n");
+            sleep(1);
+            printf("Os livros que n�s recomendamos s�o: \n");
+            sleep(1);
+            for (int contador2 = 1; contador2 < num_livros_autoajuda; contador2++){ // Estrutura de repeti��o que ir� exibir o �ndice(come�ando do 1), o t�tulo do livro, seu autor e sua sinopse.
+                printf("[%d] - %s - Autor(a): %s\n Sinopse: %s\n", contador2, auto_ajuda[contador2], autores_auto_ajuda[contador2], sinopse_auto_ajuda[contador2]);
+                sleep(1);
+                }
+                    break;
+            
+            case 5:
+            system("cls");
+            printf("G�nero escolhido: Infanto Juvenil \n");
+            sleep(1);
+            printf("Os livros que n�s recomendamos s�o: \n");
+            sleep(1);
+                for (int contador2 = 1; contador2 < num_livros_infantojuvenil; contador2++){ // Estrutura de repeti��o que ir� exibir o �ndice(come�ando do 1), o t�tulo do livro, seu autor e sua sinopse.
+                printf("[%d] - %s - Autor(a): %s\n Sinopse: %s\n", contador2, infanto_juvenil[contador2], autores_infanto_juvenil[contador2], sinopse_infanto_juvenil[contador2]);
+                sleep(1);
+                }
+                    break;
+            default:
+            printf("Valor inv�lido! N�o s�o permitidas letras e n�meros menores que 1 ou maiores que 5.");
+        }
+        printf("Deseja sair[1] ou voltar ao menu[2]?\n");
+        scanf("%d",&escolha2);
+    
+        if(escolha2 == 1){
+        sleep(1);
+        system("cls");
+        printf("Obrigado por usar o Bookverse!\n");
+        break;
+        }else if(escolha2 == 2){
+        system("cls");
+        printf("Voltando ao menu...\n");
+        sleep(2);
+        system("cls");
+        }
+        
+   } else if(escolha == 2){ /* Estrutura condicional que ser� utilizada caso o usu�rio escolha a op��o 2(cadastrar livros).*/
+        printf("Por favor digite sua senha: \n");
+        scanf("%19s", senha_digitada);
+        if (strcmp(senha_digitada, senha) == 0){ // "strcmp" ou "string compare", � uma fun��o cujo papel � comparar duas strings. Se os 2 par�metros forem iguais, o valor retornado ser� 0 e essa estrutura condicional ser� utilizada.
+            sleep(1);
+            printf("Seja bem vindo!\n");
+            
+            printf("Deseja cadastrar um livro[1] ou alterar um livro[2]?\n");
+            scanf("%d",&opcao2);
+            if(opcao2 == 1){ // Estrutura de repeti��o para cadastrar um livro.
+                
+                            sleep(1);
+            system("cls");
+            sleep(1);
+            printf("Esses s�o os g�neros dispon�veis: \n");
+            for(int contador1 = 0; contador1 < 5; contador1++){ /* Estrutura de repeti��o que ir� exibir os g�neros dispon�veis, os quais est�o inseridos no vetor de g�nero.*/
+            printf("[%d] - %s\n", contador1+1, genero[contador1]);
+        }
+            printf("Escolha o g�nero do livro no qual voc� deseja cadastrar:\n");
+            scanf("%d",&opcao);
+            
+            if(opcao < 1 || opcao > 5){ /*Estrutura condicional que caso o usu�rio digite uma op��o que n�o esteja entre 1 e 5, aparecer� uma mensagem de erro.*/
+            system("cls");
+            printf("Valor inv�lido! N�o s�o permitidas letras ou n�meros menores que 1 ou maiores que 5.");
+            break;
+        }
+        if (num_livros_litbr >= MAX_INDICES || num_livros_litest >= MAX_INDICES || num_livros_saude >= MAX_INDICES || num_livros_autoajuda >= MAX_INDICES || num_livros_infantojuvenil >= MAX_INDICES ){ // Estrutura condicional que ser� utilizada caso seja alcan�ado o limite de cadastro de livros de determinado g�nero.
+                system("cls");
+                printf("Limite de livros cadastrados alcan�ado para este g�nero!\n");
+                break;
+            }
+        
+        switch(opcao){
+           
+            case 1:
+                system("cls");
+                printf("G�nero escolhido: Literatura brasileira\n");
+                getchar(); // Comando usado para limpar o buffer
+                
+                printf("Cadastre o nome do livro:\n");
+                fgets(lit_br[num_livros_litbr], 300, stdin); // Fun��o que funciona como um "scanf" para ler strings que contenham espa�o. Ex: "Mateus Cainan".
+                
+                printf("Cadastre o nome do(a) autor(a) do livro:\n");
+                fgets(autores_litbr[num_livros_litbr], 300, stdin);      
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_litbr[num_livros_litbr], 300, stdin);
+                
+                printf("Cadastrado com sucesso!\n");
+                
+                num_livros_litbr++; // Incrementa o contador de livros de Literatura brasileira para o pr�ximo �ndice vazio.
+
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_litbr; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, lit_br[contador2], autores_litbr[contador2]);
+                }
+                    break;
+            case 2:
+                system("cls");
+                printf("G�nero escolhido: Literatura estrangeira\n");
+                getchar();
+                
+                printf("Cadastre o nome do livro:\n");
+                fgets(lit_br[num_livros_litest], 300, stdin);
+                
+                printf("Cadastre o nome do(a) autor(a) do livro:\n");
+                fgets(autores_litest[num_livros_litbr], 300, stdin); 
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_litest[num_livros_litest], 300, stdin);
+                
+                printf("Cadastrado com sucesso!\n");
+                
+                num_livros_litest++;  // Incrementa o contador de livros de Literatura estrangeira para o pr�ximo �ndice vazio.
+
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_litest; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, lit_est[contador2], autores_litest[contador2]);
+                }
+                    break;
+                
+            case 3:
+                system("cls");
+                printf("G�nero escolhido: Sa�de\n");
+                getchar();
+                
+                printf("Cadastre o nome do livro:\n");
+                fgets(saude[num_livros_saude], 300, stdin);
+                
+                printf("Cadastre o nome do(a) autor(a) do livro:\n");
+                fgets(autores_saude[num_livros_saude], 300, stdin);        
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_saude[num_livros_saude], 300, stdin);
+                
+                printf("Cadastrado com sucesso!\n");
+                
+                num_livros_saude++;  // Incrementa o contador de livros de sa�de para o pr�ximo �ndice vazio
+
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_saude; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, saude[contador2], autores_saude[contador2]);
+                }
+                    break;
+                    
+            case 4:
+                system("cls");
+                printf("G�nero escolhido: Auto-ajuda\n");
+                getchar();
+                
+                printf("Cadastre o nome do livro:\n");
+                fgets(auto_ajuda[num_livros_autoajuda], 300, stdin);
+                
+                printf("Cadastre o nome do(a) autor(a) do livro:\n");
+                fgets(autores_auto_ajuda[num_livros_autoajuda], 300, stdin);    
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_auto_ajuda[num_livros_autoajuda], 300, stdin);
+                
+                printf("Cadastrado com sucesso!\n");
+                
+                num_livros_autoajuda++; // Incrementa o contador de livros de Auto-ajuda para o pr�ximo �ndice vazio.
+                
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_autoajuda; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, auto_ajuda[contador2], autores_auto_ajuda[contador2]);
+                }
+                    break;
+                    
+            case 5:
+                system("cls");
+                printf("G�nero escolhido: Infanto Juvenil\n");
+                getchar();
+                
+                printf("Cadastre o nome do livro:\n");
+                fgets(infanto_juvenil[num_livros_infantojuvenil], 300, stdin);
+                
+                printf("Cadastre o nome do(a) autor(a) do livro:\n");
+                fgets(autores_infanto_juvenil[num_livros_infantojuvenil], 300, stdin);  
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_infanto_juvenil[num_livros_infantojuvenil], 300, stdin);
+                
+                printf("Cadastrado com sucesso!\n");
+                
+                num_livros_infantojuvenil++; //Incrementa o contador de livros do g�nero Infanto Juvenil para o pr�ximo �ndice vazio.
+
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_infantojuvenil; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, infanto_juvenil[contador2], autores_infanto_juvenil[contador2]);
+                }
+                    break;
+            default:
+            printf("Valor inv�lido! N�o s�o permitidas letras ou n�meros menores que 1 ou maiores que 5.\n");
+                break;
+
+            }
+            
+            }
+            
+            else if(opcao2 == 2){ // Estrutura de repeti��o para alterar um livro da lista.
+            printf("Esses s�o os g�neros dispon�veis: \n");
+            for(int contador1 = 0; contador1 < 5; contador1++){ /* Estrutura de repeti��o que ir� exibir os g�neros dispon�veis, os quais est�o inseridos no vetor de g�nero.*/
+            printf("[%d] - %s\n", contador1+1, genero[contador1]);
+        }
+            printf("Escolha o g�nero do livro no qual voc� deseja alterar:\n");
+            scanf("%d",&opcao);
+            
+            if(opcao < 1 || opcao > 5){ // Estrutura condicional que ir� exibir uma mensagem de erro caso o usu�rio digite uma letra ou um n�mero que n�o esteja entre 1 e 5.
+            system("cls");
+            printf("Valor inv�lido! N�o s�o permitidas letras e n�meros menores que 1 ou maiores que 5.");
+            break;
+                
+            }
+            switch(opcao){ // Estrutura "Switch Case" com a fun��o de alterar livros cadastrados.
+                case 1: 
+                system("cls");
+                printf("G�nero escolhido: Literatura brasileira.\n");
+                sleep(1);
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_litbr; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, lit_br[contador2], autores_litbr[contador2]);
+                }
+                
+                printf("Selecione o livro que voc� deseja alterar:\n");
+                scanf("%d",&livro_escolhido);
+                
+                getchar();
+                
+                printf("Informe o nome do livro:\n");
+                fgets(lit_br[livro_escolhido], 300, stdin);
+                
+                printf("Informe o autor desse livro:\n");
+                fgets(autores_litbr[livro_escolhido], 300, stdin);
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_litbr[livro_escolhido], 300, stdin);
+                
+                printf("Livro alterado com sucesso!\n");
+                break;
+                
+                case 2: 
+                system("cls");
+                printf("G�nero escolhido: Literatura estrangeira.\n");
+                sleep(1);
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_litest; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, lit_est[contador2], autores_litest[contador2]);
+                }
+                
+                printf("Selecione o livro que voc� deseja alterar:\n");
+                scanf("%d",&livro_escolhido);
+                
+                getchar();
+                
+                printf("Informe o nome do livro:\n");
+                fgets(lit_est[livro_escolhido], 300, stdin);
+                
+                printf("Informe o autor desse livro:\n");
+                fgets(autores_litest[livro_escolhido], 300, stdin);
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_litest[livro_escolhido], 300, stdin);
+                
+                printf("Livro alterado com sucesso!\n");
+                break;
+                
+                case 3: 
+                
+                system("cls");
+                printf("G�nero escolhido: Sa�de.\n");
+                
+                sleep(1);
+                
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_saude; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, saude[contador2], autores_saude[contador2]);
+                }
+                printf("Selecione o livro que voc� deseja alterar:\n");
+                scanf("%d",&livro_escolhido);
+                
+                getchar();
+                
+                printf("Informe o nome do livro:\n");
+                fgets(saude[livro_escolhido], 300, stdin);
+                
+                printf("Informe o autor desse livro:\n");
+                fgets(autores_saude[livro_escolhido], 300, stdin);
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_saude[livro_escolhido], 300, stdin);
+                
+                printf("Livro alterado com sucesso!\n");
+                break;
+                
+                case 4: 
+                
+                system("cls");
+                printf("G�nero escolhido: Auto-ajuda.\n");
+                
+                sleep(1);
+                
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_autoajuda; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, auto_ajuda[contador2], autores_auto_ajuda[contador2]);
+                }
+                
+                printf("Selecione o livro que voc� deseja alterar:\n");
+                scanf("%d",&livro_escolhido);
+                
+                getchar();
+                
+                printf("Informe o nome do livro:\n");
+                fgets(auto_ajuda[livro_escolhido], 300, stdin);
+                
+                printf("Informe o autor desse livro:\n");
+                fgets(autores_auto_ajuda[livro_escolhido], 300, stdin);
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(sinopse_auto_ajuda[livro_escolhido], 300, stdin);
+                
+                printf("Livro alterado com sucesso!\n");
+                break;
+                
+                case 5: 
+                
+                system("cls");
+                printf("G�nero escolhido: Infanto Juvenil.\n");
+                sleep(1);
+                
+                printf("Livros cadastrados:\n");
+                for (int contador2 = 1; contador2 < num_livros_infantojuvenil; contador2++){
+                printf("[%d] - %s - Autor(a): %s\n", contador2, infanto_juvenil[contador2], autores_infanto_juvenil[contador2]);
+                }
+                
+                printf("Selecione o livro que voc� deseja alterar:\n");
+                scanf("%d",&livro_escolhido);
+                
+                getchar();
+                
+                printf("Informe o nome do livro:\n");
+                fgets(infanto_juvenil[livro_escolhido], 300, stdin);
+                
+                printf("Informe o autor desse livro:\n");
+                fgets(infanto_juvenil[livro_escolhido], 300, stdin);
+                
+                printf("Informe a sinopse do livro:\n");
+                fgets(infanto_juvenil[livro_escolhido], 300, stdin);
+                
+                printf("Livro alterado com sucesso!\n");
+                break;
+            }
+            
+            }
+            
+    printf("Deseja sair[1] ou voltar ao menu[2]?\n");
+    scanf("%d",&escolha2);
+    
+    if(escolha2 == 1){
+        sleep(1);
+        system("cls");
+        printf("Obrigado por usar o Bookverse!\n");
+        break;
+    } else if(escolha2 == 2){
+        system("cls");
+        printf("Voltando ao menu...\n");
+        sleep(2);
+        system("cls");
+    } else{
+        printf("Valor inv�lido! Digite 1 ou 2.\n");
+        sleep(1);
+        break;
+    }
+    }
+    
+    
+    else{ // Estrutura "Else" utilizada caso o usu�rio erre a senha para a permiss�o de modificar a lista de livros.
+            sleep(1);
+            printf("Senha incorreta!\n");
+            sleep(1);
+    }
+    
+    
+} else{ // Estrutura acionada se o usu�rio n�o digitar 1(recomenda��o de livros) ou 2(modificar a lista de livros).
+    printf("Valor inv�lido! Escolha 1 ou 2.\n");
+}
+
+}
+
+}
+
 
